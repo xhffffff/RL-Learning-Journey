@@ -12,16 +12,7 @@
   <img src="https://img.shields.io/badge/focus-RLHF%20%7C%20DPO%20%7C%20GRPO-orange?label=重点" alt="Focus: RLHF">
 </p>
 
-<pre align="center">
-██╗    ██╗     ██████╗ ██╗         ██╗   ██╗████                 ██╗   ██╗
-██║    ██║     ██╔══██╗██║         ██║   ██║   ██                ██║   ██║
-██║    ██║     ██████╔╝██║         ██║   ██║█████╗               ██║   ██║
-██║    ██║     ██╔══██╗██║         ██║   ██║╚═══██║              ██║   ██║
-██████╗███████╗██║  ██║███████╗    ╚██████╔╝██████║              ╚██████╔╝
-╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝     ╚═════╝ ╚═════╝               ╚═════╝
-</pre>
 <h1 align="center">从 Q-Learning 到 DAPO：强化学习算法演进全记录</h1>
-<h3 align="center">🚀 面向 RLHF 入门者：从零掌握经典 RL 到 LLM 对齐训练</h3>
 
 ---
 
@@ -38,7 +29,6 @@
 - [📊 算法对比表](#-算法对比表)
 - [🗺️ 学习路线图](#️-学习路线图)
 - [⚡ 快速开始](#-快速开始)
-- [🔧 安装故障排除](#-安装故障排除)
 - [📚 延伸阅读](#-延伸阅读)
 - [🙏 致谢](#-致谢)
 
@@ -226,8 +216,6 @@ RL-Learning-Journey/
 ### 第一章：基础算法 (1980s-2013)
 
 > 🎯 **学习目标**：理解 RL 的核心机制——值函数、TD 学习、策略梯度
->
-> ⏱️ **预计用时**：2-3 天（如果你已有 DL 基础，可以压缩到 1-2 天）
 
 在深度神经网络尚未流行的时代，RL 算法通过**表格**或**线性函数**进行学习。本章是理解一切现代 RL 算法的**必修基础**。
 
@@ -252,8 +240,6 @@ $$\nabla_\theta J \approx \frac{1}{N} \sum_{i} \sum_{t} \nabla_\theta \log \pi_\
 ### 第二章：深度强化学习 (2013-2017)
 
 > 🎯 **学习目标**：掌握神经网络 + RL 的组合拳，理解 DQN → PPO 的技术演进
->
-> ⏱️ **预计用时**：3-5 天（PPO 是重点，多花 1-2 天理解裁剪机制和 GAE）
 
 深度学习赋予了 RL 处理**高维状态空间**（图像、连续控制）的能力，开启了 DeepRL 时代。**PPO 是 RLHF 的核心引擎**，务必彻底理解。
 
@@ -279,8 +265,6 @@ $$L^{\text{CLIP}}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta)\hat{A}_t, \ 
 ### 第三章：高级算法 (2015-2023)
 
 > 🎯 **学习目标**：了解 RL 的前沿方向——信任区域约束、世界模型、基于模型的规划
->
-> ⏱️ **预计用时**：2-3 天（可选择性学习，非 RLHF 必修）
 
 这些算法代表了 RL 能力的边界拓展。虽然不是 RLHF 的直接依赖，但理解它们有助于建立完整的 RL 知识体系。
 
@@ -304,8 +288,6 @@ $$\max_\theta \mathbb{E}\left[\frac{\pi_\theta(a|s)}{\pi_{\theta_{\text{old}}}(a
 ### 第四章：LLM 时代的强化学习 (2022-至今) ⭐
 
 > 🎯 **学习目标**：彻底弄懂 RLHF → DPO → GRPO → RLOO → DAPO 的技术演进，掌握 LLM 对齐的核心方法
->
-> ⏱️ **预计用时**：4-6 天（本项目的重中之重，值得花最多时间）
 >
 > 🔥 **本章是本项目的核心重点。** 详细文档：[`chapter_04_llm_rl/README.md`](chapter_04_llm_rl/README.md)
 
@@ -490,39 +472,6 @@ $$\mathcal{L}_{\text{RLOO}} = -\frac{1}{K} \sum_{k=1}^{K} A_k \cdot \log \pi_\th
         第一章              第二、三章           第四章
 ```
 
-### 🎯 推荐学习顺序（具体版）
-
-```
-第一步（1-2 天）: 第一章 基础算法
-  ├── Q-Learning → 理解 TD 学习和 Off-Policy（1 小时）
-  ├── SARSA → 对比 On-Policy 的区别（30 分钟）
-  └── REINFORCE → 理解策略梯度直觉（1 小时）
-  💡 如果你非常熟悉 DL，本章可以快速过，重点理解"为什么 RL 需要贝尔曼方程"
-
-第二步（3-5 天）: 第二章 深度 RL
-  ├── DQN + Double + Dueling → 理解经验回放、目标网络、Q 值分解（1 天）
-  ├── A2C → 理解 Actor-Critic 架构和优势函数（半天）
-  ├── PPO → ⭐ 重点！理解裁剪机制和 GAE，RLHF 的核心引擎（1-2 天）
-  └── SAC → 了解最大熵 RL（半天）
-  💡 如果时间有限，DQN 和 PPO 必学，其余可以跳读
-
-第三步（2-3 天）: 第三章 高级算法（可选）
-  ├── TRPO → 理解信任区域思想（它是 PPO 裁剪的理论前身）
-  ├── TD3 → 理解如何工程化修复算法缺陷
-  └── MuZero/Dreamer → 了解基于模型的 RL（可为 LLM Agent 研究打基础）
-  💡 本章非 RLHF 必修，可直接跳到第四章
-
-第四步（4-6 天）: ⭐ 第四章 LLM RL（核心重点）
-  ├── 先读「为什么需要 RL」（30 分钟）—— 理解 SFT 的局限
-  ├── RLHF 三阶段 + 渐进式代码走读（1-2 天）
-  ├── DPO + 拔河比喻（半天）
-  ├── GRPO + 为什么 DeepSeek 选它（半天）
-  ├── 算法决策流程图 + FAQ（1 小时）
-  └── 跑通全部三个 demo（30 分钟）
-```
-
-> 💡 **总时间预算**：10-16 天（每天 2-3 小时）。如果只专注于 RLHF 相关内容（跳过第三章），可以压缩到 8-10 天。
-
 ---
 
 ## ⚡ 快速开始
@@ -539,8 +488,8 @@ $$\mathcal{L}_{\text{RLOO}} = -\frac{1}{K} \sum_{k=1}^{K} A_k \cdot \log \pi_\th
 ### 安装
 
 ```bash
-# 1. 克隆仓库（请替换为你的实际仓库地址）
-git clone <your-repo-url>  RL-Learning-Journey
+# 1. 克隆仓库
+git clone https://github.com/xhffffff/RL-Learning-Journey.git
 cd RL-Learning-Journey
 
 # 2. 创建虚拟环境（推荐）
@@ -691,89 +640,6 @@ python test_chapter01.py
 python test_chapter02.py
 python test_chapter03.py
 python test_chapter04.py
-```
-
----
-
-## 🔧 安装故障排除
-
-### 问题 1：`pip install -r requirements.txt` 失败
-
-**症状**：安装 PyTorch 时报错或下载速度极慢
-
-**解决方案**：
-```bash
-# 方法1：先手动安装 PyTorch（根据你的 CUDA 版本选择）
-# CUDA 11.8
-pip install torch --index-url https://download.pytorch.org/whl/cu118
-# CUDA 12.1
-pip install torch --index-url https://download.pytorch.org/whl/cu121
-# CPU only
-pip install torch --index-url https://download.pytorch.org/whl/cpu
-
-# 然后安装其余依赖
-pip install gymnasium numpy matplotlib tqdm pytest
-```
-
-### 问题 2：`import gymnasium` 报错
-
-**症状**：`ModuleNotFoundError: No module named 'gymnasium'` 或版本冲突
-
-**解决方案**：
-```bash
-# 确保 gymnasium 版本 >= 0.29
-pip install --upgrade gymnasium
-
-# 如果之前安装了旧版 gym，卸载它
-pip uninstall gym
-```
-
-### 问题 3：Windows 上 CUDA 不可用
-
-**症状**：`torch.cuda.is_available()` 返回 `False`
-
-**解决方案**：
-```bash
-# 检查安装的 PyTorch 是否是 CUDA 版本
-pip show torch | grep "Version"
-
-# 卸载并重装 CUDA 版本的 PyTorch
-pip uninstall torch
-pip install torch --index-url https://download.pytorch.org/whl/cu118
-```
-
-### 问题 4：`python train.py` 找不到模块
-
-**症状**：`ModuleNotFoundError: No module named 'common'`
-
-**解决方案**：
-```bash
-# 在项目根目录运行
-cd RL-Learning-Journey
-
-# 方法1：以包形式安装
-pip install -e .
-
-# 方法2：临时添加到 Python 路径
-set PYTHONPATH=%CD%    # Windows
-export PYTHONPATH=$PWD  # Linux/Mac
-```
-
-### 问题 5：第四章 demo 运行报错
-
-**症状**：RLHF/DPO/GRPO 的 `train.py --demo` 运行失败
-
-**解决方案**：
-```bash
-# 确保直接运行 .py 文件而不是 train.py
-cd chapter_04_llm_rl/01_rlhf
-python rlhf.py       # ✅ 推荐
-# 而不是
-python train.py      # ⚠️ 需要 --demo 参数
-
-# 如果 train.py 报错，直接用核心脚本
-cd chapter_04_llm_rl/02_dpo
-python dpo.py        # ✅ 直接运行
 ```
 
 ---
