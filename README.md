@@ -8,7 +8,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/chapter-4-blue?label=总章节" alt="4 chapters">
-  <img src="https://img.shields.io/badge/algorithms-14-brightgreen?label=涵盖算法" alt="14 algorithms">
+  <img src="https://img.shields.io/badge/algorithms-16-brightgreen?label=涵盖算法" alt="16 algorithms">
   <img src="https://img.shields.io/badge/focus-RLHF%20%7C%20DPO%20%7C%20GRPO-orange?label=重点" alt="Focus: RLHF">
 </p>
 
@@ -20,7 +20,7 @@
 ██████╗███████╗██║  ██║███████╗    ╚██████╔╝██████║              ╚██████╔╝
 ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝     ╚═════╝ ╚═════╝               ╚═════╝
 </pre>
-<h1 align="center">从 Q-Learning 到 GRPO：强化学习算法演进全记录</h1>
+<h1 align="center">从 Q-Learning 到 DAPO：强化学习算法演进全记录</h1>
 <h3 align="center">🚀 面向 RLHF 入门者：从零掌握经典 RL 到 LLM 对齐训练</h3>
 
 ---
@@ -46,7 +46,7 @@
 
 ## 🎯 项目介绍
 
-**RL-Learning-Journey** 是一个按照强化学习发展脉络组织的教学项目，覆盖从 **Q-Learning (1989)** 到 **GRPO (2025)** 共 14 个核心算法。项目以代码为核心，每个算法都配有**可运行的最小实现**，帮助你"看到"算法的工作原理，而不仅仅是"读懂"公式。
+**RL-Learning-Journey** 是一个按照强化学习发展脉络组织的教学项目，覆盖从 **Q-Learning (1989)** 到 **DAPO (2025)** 共 16 个核心算法。每个算法都配有**可运行的最小实现**，帮助你"看到"算法的工作原理，而不仅仅是"读懂"公式。
 
 ### 🎓 目标受众
 
@@ -209,7 +209,9 @@ RL-Learning-Journey/
 ├── chapter_04_llm_rl/              ⭐ 第四章：LLM 时代的强化学习
 │   ├── 01_rlhf/                    # RLHF (InstructGPT)
 │   ├── 02_dpo/                     # Direct Preference Optimization
-│   └── 03_grpo/                    # Group Relative Policy Optimization
+│   ├── 03_grpo/                    # Group Relative Policy Optimization
+│   ├── 04_rloo/                    # REINFORCE Leave-One-Out (Cohere, 2024)
+│   └── 05_dapo/                    # DAPO (ByteDance+Tsinghua, 2025)
 │
 ├── test_chapter01.py ~ test_chapter04.py   🧪 单元测试
 ├── requirements.txt                📦 依赖
@@ -301,13 +303,13 @@ $$\max_\theta \mathbb{E}\left[\frac{\pi_\theta(a|s)}{\pi_{\theta_{\text{old}}}(a
 
 ### 第四章：LLM 时代的强化学习 (2022-至今) ⭐
 
-> 🎯 **学习目标**：彻底弄懂 RLHF → DPO → GRPO 的技术演进，掌握 LLM 对齐的核心方法
+> 🎯 **学习目标**：彻底弄懂 RLHF → DPO → GRPO → RLOO → DAPO 的技术演进，掌握 LLM 对齐的核心方法
 >
 > ⏱️ **预计用时**：4-6 天（本项目的重中之重，值得花最多时间）
 >
 > 🔥 **本章是本项目的核心重点。** 详细文档：[`chapter_04_llm_rl/README.md`](chapter_04_llm_rl/README.md)
 
-详细文档包含：为什么需要 RL、SFT vs RLHF 对比、渐进式代码走读、DPO 拔河比喻、GRPO 推理机制、算法决策流程图、FAQ 等。
+详细文档包含：为什么需要 RL、SFT vs RLHF 对比、渐进式代码走读、DPO 拔河比喻、GRPO 推理机制、RLOO 无偏基线、DAPO 工程改进、算法决策流程图、FAQ 等。
 
 #### 4.1 RLHF — 强化学习从人类反馈
 
@@ -385,7 +387,47 @@ $$A_i = \frac{R_i - \text{mean}(\{R_j\}_{j=1}^G)}{\text{std}(\{R_j\}_{j=1}^G)}$$
 
 > 💻 代码入口：GRPO 实现在 [`chapter_04_llm_rl/03_grpo/grpo.py:134`](chapter_04_llm_rl/03_grpo/grpo.py)
 
-**核心论文**：*DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning* (DeepSeek-AI, 2025)
+**核心论文**: *DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning* (DeepSeek-AI, 2025)
+
+#### 4.4 RLOO — REINFORCE Leave-One-Out
+
+**"PPO 对 RLHF 来说是大炮打蚊子"**。RLOO 回到最基础的 REINFORCE 算法，用一个简单的 Leave-One-Out 基线替代 Critic 网络。
+
+**RLOO 优势函数**：
+
+$$A_k = \frac{K}{K-1}\left(R_k - \frac{1}{K}\sum_{j=1}^{K} R_j\right)$$
+
+**RLOO 损失**：
+
+$$\mathcal{L}_{\text{RLOO}} = -\frac{1}{K} \sum_{k=1}^{K} A_k \cdot \log \pi_\theta(a_k|s) + \beta \cdot D_{KL}(\pi_\theta \parallel \pi_{\text{ref}})$$
+
+**三大优势**：
+- 无 Critic 网络（节省 ~33% 显存）
+- 无 PPO 裁剪（极简实现，核心代码 ~20 行）
+- **无偏梯度估计**（LOO 基线在数学上是无偏的）
+
+> 💻 代码入口: [`chapter_04_llm_rl/04_rloo/rloo.py`](chapter_04_llm_rl/04_rloo/rloo.py)
+
+**核心论文**: *Back to Basics: Revisiting REINFORCE Style Optimization for Learning from Human Feedback in LLMs* (Ahmadian et al., Cohere For AI, 2024)
+
+#### 4.5 DAPO — 解耦裁剪与动态采样策略优化
+
+**"GRPO 的四大工程补丁"**。ByteDance Seed + 清华 AIR 团队发现 GRPO 在竞赛级推理上有四个致命缺陷，并逐一修复。
+
+**DAPO 四大创新**：
+
+| 创新 | 问题 | 解决方案 |
+|------|------|----------|
+| **Clip-Higher** | PPO 对称裁剪限制探索 | 非对称裁剪 clip(r, 1-ε_low, 1+ε_high) |
+| **Dynamic Sampling** | 全对/全错样本无学习信号 | 过滤 std=0 的 prompt |
+| **Token-Level Loss** | 样本级损失对长短序列不公 | 总 token 数归一的逐 token 损失 |
+| **Overlong Shaping** | 硬截断导致长度崩塌 | 软惩罚 R·exp(-α·超出比例) |
+
+**AIME 2024 成绩**: 50%（DeepSeek-R1 为 47%，仅需一半训练步数）
+
+> 💻 代码入口: [`chapter_04_llm_rl/05_dapo/dapo.py`](chapter_04_llm_rl/05_dapo/dapo.py)
+
+**核心论文**: *DAPO: An Open-Source LLM RL System at Scale* (ByteDance Seed + Tsinghua AIR, 2025)
 
 ---
 
@@ -409,6 +451,8 @@ $$A_i = \frac{R_i - \text{mean}(\{R_j\}_{j=1}^G)}{\text{std}(\{R_j\}_{j=1}^G)}$$
 | **RLHF** | 2022 | OpenAI | LLM + PPO | 三阶段人类对齐 | **ChatGPT** |
 | **DPO** | 2023 | Stanford | LLM + 偏好 | 无需奖励模型 | **LLM 对齐** |
 | **GRPO** | 2025 | DeepSeek | LLM + 组优化 | 无 Critic + 组内基线 | **DeepSeek-R1** |
+| **RLOO** | 2024 | Cohere | LLM + REINFORCE | LOO 无偏基线 | 通用 RLHF |
+| **DAPO** | 2025 | ByteDance+Tsinghua | LLM + 组优化 | 四大工程改进 | 竞赛级推理 |
 
 ---
 
@@ -437,6 +481,10 @@ $$A_i = \frac{R_i - \text{mean}(\{R_j\}_{j=1}^G)}{\text{std}(\{R_j\}_{j=1}^G)}$$
                            ─── 更简单、更稳定            │  ⭐ 重点
 2025 ─ GRPO ────────────────── 无 Critic + 组内归一化    │
                            ─── DeepSeek-R1 推理突破       │
+2024 ─ RLOO ─────────────────── 纯 REINFORCE + LOO 基线  │
+                           ─── 无偏梯度，极简实现          │
+2025 ─ DAPO ────────────────── GRPO 四大工程改进            │
+                           ─── AIME 50% 超越 DeepSeek-R1   │
                                                          ┘
         ← 从零开始 →       ← 经典掌握 →       ← 前沿对齐 →
         第一章              第二、三章           第四章
@@ -624,6 +672,14 @@ cd chapter_04_llm_rl/03_grpo
 python grpo.py
 # 或
 python train.py --demo
+
+# RLOO 演示
+cd chapter_04_llm_rl/04_rloo
+python rloo.py
+
+# DAPO 演示
+cd chapter_04_llm_rl/05_dapo
+python dapo.py
 ```
 </details>
 
@@ -738,6 +794,8 @@ python dpo.py        # ✅ 直接运行
 | 8 | **DeepSeek-R1 (GRPO)** | [arXiv 2501.12948](https://arxiv.org/abs/2501.12948) | 推理强化学习突破 |
 | 9 | Mastering Atari, Go, Chess (MuZero) | [Nature 2020](https://www.nature.com/articles/s41586-020-03051-4) | 基于模型的 RL |
 | 10 | DreamerV3 | [arXiv 2301.04104](https://arxiv.org/abs/2301.04104) | 通用世界模型 |
+| 11 | **Back to Basics: REINFORCE Style Optimization (RLOO)** | [arXiv 2402.14740](https://arxiv.org/abs/2402.14740) | LOO 基线替代 Critic |
+| 12 | **DAPO: An Open-Source LLM RL System** | [arXiv 2503.14476](https://arxiv.org/abs/2503.14476) | GRPO 的四大工程改进 |
 
 ### 📖 推荐教材
 
